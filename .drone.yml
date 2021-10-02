@@ -1,0 +1,22 @@
+kind: pipeline
+type: docker
+name: drone_jieshuiguai_website
+
+steps:
+- name: stop
+  commands:
+  - make stop
+
+- name: build
+  commands:
+  - make build
+
+- name: deploy
+  commands:
+  - make deploy
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
