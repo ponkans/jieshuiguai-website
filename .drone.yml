@@ -1,19 +1,80 @@
 kind: pipeline
-type: docker
 name: drone_jieshuiguai_website
 
 steps:
-- name: stop
-  commands:
-  - make stop
+  # 加载缓存中的 node_modules
+  - name: restore-cache
+    image: drillster/drone-volume-cache
+    volumes:
+    - name: cache  
+      path: /cache
+    settings:
+      restore: true
+      mount:
+        - ./node_modules
 
-- name: build
-  commands:
-  - make build
+  # 更新 node_modules
+  - name: yarn-install
+    image: node:12-alpine
+    commands:
+      - yarn install
 
-- name: deploy
-  commands:
-  - make deploy
+  # 打包
+  - name: yarn-build
+    image: node:12-alpine
+    commands:
+      - yarn build
+
+  # 拷贝容器需要的文件
+  - name: copy 
+    image: node:12-alpine
+    commands:
+      - cp -rf docker/Dockerfile .
+      - cp -rf docker/nginx.conf .
+
+  # 制作并推送镜像到 aliyun
+  - name: publish
+    image: plugins/docker
+    settings:
+      repo: registry.cn-beijing.aliyuncs.com/jieshuiguai/website
+      registry: registry.cn-beijing.aliyuncs.com
+      target: production
+      auto_tag: true
+      dockerfile: docker/Dockerfile
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+  
+  # 从 aliyun 拉取镜像，并启动
+  - name: deploy
+    image: docker:latest
+    volumes:
+    - name: docker_sock
+      path: /var/run/docker.sock
+    commands:
+      - docker rm -f website || true
+      - docker pull registry.cn-beijing.aliyuncs.com/jieshuiguai/website
+      - docker run -dt --name website -p 80:80 registry.cn-beijing.aliyuncs.com/jieshuiguai/website:latest
+
+  # 更新 node_modules缓存
+  - name: rebuild-cache
+    image: drillster/drone-volume-cache
+    volumes:
+    - name: cache  
+      path: /cache
+    settings:
+      rebuild: true
+      mount:
+        - ./node_modules
+
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
+  - name: cache
+    host:
+      path: /tmp/cache
 
 trigger:
   branch:

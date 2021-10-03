@@ -4,11 +4,10 @@
 /node_modules
 /npm-debug.log*
 /yarn-error.log
-/yarn.lock
 /package-lock.json
 
-# production，dist 留着，服务端打包比较慢，本地打好验证没问题，推送到 drone
-# /dist
+# production
+/dist
 
 # misc
 .DS_Store

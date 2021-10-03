@@ -1,7 +1,7 @@
 ---
 hero:
   title: 接水怪
-  desc: dumi site app 脚手架
+  desc: 增加缓存
   actions:
     - text: 快速上手
       link: /getting-started

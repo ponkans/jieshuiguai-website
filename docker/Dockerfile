@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM nginx:alpine as production
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY dist /usr/share/nginx/html

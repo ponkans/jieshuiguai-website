@@ -1,4 +1,4 @@
-# dumi app
+# 个人站点
 
 ## Getting Started
 
@@ -14,8 +14,14 @@ Start the dev server,
 $ npm start
 ```
 
-Build site app,
+Build site app
 
 ```bash
 $ npm run build
+```
+
+deploy site app
+
+```bash
+$ git push
 ```
