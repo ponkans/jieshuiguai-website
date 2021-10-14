@@ -1,6 +1,6 @@
 ---
 hero:
-  title: 接水怪
+  title: 接测试
   desc: 一个有点意思的「前端」博主 🤔🤔🤔
   actions:
     - text: 听说又更新了，点击查看！
